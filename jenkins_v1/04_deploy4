@@ -1,0 +1,23 @@
+// 자바 설치 및 확인 (필수)
+sudo apt install openjdk-11-jdk
+java -version
+
+// start.sh
+# 현재 실행중인 basic-web-project의 프로세스ID를 조회 (CURRENT_PID)
+CURRENT_PID=$(ps -ef | grep java | grep basic-web-project | awk '{print $2}')
+echo "{$CURRENT_PID}"
+
+# 있으면 실행중인 프로세스를 종료하고 10초를 멈춘뒤
+if [ -z $CURRENT_PID ]; then
+echo "Project is not running"
+else
+kill -9 $CURRENT_PID
+sleep 10
+fi
+
+# basic-web-project를 시작함
+# nohup & : 자바 프로그램을 백그라운드에서 실행함
+# >> /home/ubuntu/basic/logs/jenkins_springboot.log (로그파일에 append로 씀)
+echo "Deploy Project"
+nohup java -jar /home/ubuntu/basic/basic-web-project-0.0.1-SNAPSHOT.jar >/home/ubuntu/basic/logs/jenkins_springboot.log 2>&1 &
+echo "Done"

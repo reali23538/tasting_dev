@@ -1,0 +1,9 @@
+// git 설치
+sudo apt install git
+// git 설치 확인
+git --version
+
+// maven 설치
+sudo apt install maven
+// maven 설치 확인
+mvn -v

@@ -1,0 +1,9 @@
+// java 경로 확인
+which javac
+readlink -f /usr/bin/javac
+
+// git 경로 확인
+which git
+
+// maven 경로 확인
+mvn -version
