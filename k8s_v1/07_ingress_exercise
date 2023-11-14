@@ -1,0 +1,107 @@
+// 인그레스 컨트롤러 설치
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/aws/deploy.yaml
+
+// 인그레스 컨트롤러를 외부로 노출하기 위한 서비스 생성
+// ingress-controller-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: ingress-nginx
+  name: ingress-nginx-controller-nodeport
+  namespace: ingress-nginx
+spec:
+  ports:
+  - name: http
+    nodePort: 30000     # 30000 ~ 32767 포트 범위내에서 지정
+    port: 80
+    protocol: TCP
+    targetPort: http
+  selector:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
+  type: NodePort
+kubectl apply -f ingress-controller-service.yaml
+
+
+
+// example-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-deployment
+spec:
+  replicas: 3     # 파드를 몇개 유지시킬지 설정
+  selector:
+    matchLabels:
+      app: web-svc-server     # web-svc-server 파드와 연결
+  template:
+    metadata:
+      name: nginx-server
+      labels:
+        app: web-svc-server     # web-svc-server 파드
+    spec:
+      containers:
+      - name: nginx-server
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+          name: nginx-port     # port명 설정
+
+// deployment 생성
+kubectl apply -f example-deployment.yaml
+
+
+
+// example-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-service
+spec:
+  ports:
+    - name: web-svc-port
+      port: 80     # 서비스에 접근할 때 사용할 포트 설정
+      targetPort: nginx-port     # 파드의 포트 설정 (example-deployment.yaml의 nginx-port)
+  selector:
+    app: web-svc-server     # web-svc-server라는 라벨을 가지는 파드에 접근 (example-deployment.yaml)
+  type: ClusterIP
+
+// 서비스 생성
+kubectl apply -f example-service.yaml
+
+
+
+// example-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /     # 해당 경로에 들어온 요청을 어느 서비스로 전달할지 정의
+        pathType: Prefix
+        backend: 
+          service:     # 전달될 서비스와 포트 정의
+            name: example-service
+            port: 
+              number: 80
+
+// 인그레스 생성
+kubectl apply -f example-ingress.yaml
+
+
+
+// 파드,서비스,인그레스 확인
+kubectl get pods,services,ingress
+// 외부에서 접근
+http://[서버 IP]:30000/

@@ -1,0 +1,27 @@
+// example-pod.yaml
+apiVersion: v1     # 오브젝트의 API 버전
+kind: Pod     # 리소스의 종류
+metadata:
+  name: example-pod     # 파드의 이름 정의
+spec:
+  containers:     # 컨테이너 정보를 정의
+  - name: example-container     # 컨테이너 이름 정의
+    image: nginx:latest     # 사용할 도커 이미지 정의
+    ports:
+    - containerPort: 80     # 컨테이너가 사용할 포트 정의
+      protocol: TCP
+
+	  
+// 파드 생성
+kubectl apply -f example-pod.yaml
+
+// 파드의 목록 확인
+kubectl get pods -o wide
+kubectl get pods
+
+// nginx 웹서버 호출
+curl [클러스터IP]:80
+
+// 파드 삭제
+kubectl delete pod example-pod
+kubectl delete -f example-pod.yaml

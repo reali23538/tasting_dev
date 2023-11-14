@@ -1,0 +1,44 @@
+// example-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment     # 리소스의 종류
+metadata:
+  name: example-deployment
+spec:
+  replicas: 3     # 파드를 몇개 유지시킬지 설정
+  selector:
+    matchLabels:
+      app: example-pods-label     # example-pods-label 라벨 파드와 연결
+  template:
+    metadata:
+      name: example-pods
+      labels:
+        app: example-pods-label     # example-pods-label 파드
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.11
+        ports:
+        - containerPort: 80
+
+
+// deployment를 생성
+kubectl apply -f example-deployment.yaml --record
+// deployment,replicasets,pods 생성 확인
+kubectl get deployment,replicasets,pods
+
+
+// 파드의 nginx 버전 변경
+kubectl set image deployment example-deployment nginx=nginx:1.91 --record
+// deployment의 정보 조회
+kubectl describe deploy example-deployment
+// 개정내역 확인
+kubectl rollout history deployment example-deployment
+
+// 특정 버전으로 롤백 (리비전 번호를 지정 : --to-revision=1)
+kubectl rollout undo deployment example-deployment --to-revision=1
+// deployment의 정보 조회
+kubectl describe deploy example-deployment
+
+
+// deployment, pod, replicaset 모두 삭제
+kubectl delete deployment,pod,rs --all

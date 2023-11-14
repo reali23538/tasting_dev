@@ -1,0 +1,17 @@
+// 1.minikube 설치
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/v1.25.2/minikube-linux-amd64 && chmod +x minikube
+sudo mkdir -p /usr/local/bin/
+sudo install minikube /usr/local/bin/
+
+// 2.kubectl 설치
+curl -Lo kubectl http://storage.googleapis.com/kubernetes-release/release/v1.23.6/bin/linux/amd64/kubectl && chmod +x kubectl
+sudo install kubectl /usr/local/bin/
+
+// 3.conntrack 설치
+sudo apt-get install -y conntrack
+
+// 4.minikube 시작
+minikube start --vm-driver=none
+
+// 5.쿠버네티스 설치 확인
+kubectl version --short
