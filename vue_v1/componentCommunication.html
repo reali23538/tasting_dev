@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    <child-component v-bind:d_question="question" v-on:d_answer="answer"></child-component>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    // 자식 컴포넌트
+    Vue.component('child-component', {
+        props: ['d_question'],
+        template: '<div>' +
+                  '     {{ d_question }} ' +
+                  '     <button v-on:click="childAnswer">answer</button>' +
+                  '</div>',
+        methods: {
+            childAnswer: function() {
+                const value = 2;
+                this.$emit('d_answer', value);
+            }
+        }
+    });
+
+    // 부모 컴포넌트
+    new Vue({
+        el: '#app',
+        data: {
+            question: '1 + 1 ?'
+        },
+        methods: {
+            answer: function(value) {
+                alert(value);
+            }
+        }
+    });
+</script>
+</body>
+</html>
