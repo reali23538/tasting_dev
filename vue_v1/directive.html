@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Directive / computed & watch</title>
+</head>
+<body>
+    <div id="app">
+        <!-- v-bind : 엘리먼트의 속성 지정 -->
+        <p>
+            <div v-bind:id="dynamicId">{{ dynamicId }}</div>
+        </p>
+        <p>
+            <button v-bind:disabled="isButtonDisabled">Button</button>
+        </p>
+        <p>
+            <a v-bind:href="url">구글</a>
+        </p>
+
+        <!-- 조건부 렌더링 -->
+        <p v-if="seen">이제 나를 볼 수 있어요</p>
+        <p>
+            <h1 v-show="ok">안녕하세요!</h1>
+        </p>
+
+        <!-- 리스트 렌더링 -->
+        <p>
+            <ul>
+                <li v-for="(item, index) in items">
+                    {{ index }} / {{ item.message }}
+                </li>
+            </ul>
+        </p>
+
+        <!-- 이벤트 핸들링 -->
+        <p>
+            <button v-on:click="doSomething">doSomething</button>
+            <button v-on:click="say('hi')">Say hi</button>
+            <button v-on:click="warn('Form cannot be submitted yet.', $event)">Submit</button>
+        </p>
+
+        <p>
+            <!-- 폼 입력 바인딩 -->
+            <input v-model="message" placeholder="여기를 수정해보세요">
+            <p>메시지: {{ message }}</p>
+            <!-- computed -->
+            <p>역순으로 표시한 메시지: "{{ reversedMessage }}"</p>
+        </p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                dynamicId: 'reali',
+                isButtonDisabled: true,
+                url: 'http://www.google.com',
+
+                seen: true,
+                ok: true,
+
+                items: [
+                    { message: 'Foo' },
+                    { message: 'Bar' }
+                ],
+
+                message: 'msg'
+            },
+            methods: {
+                doSomething: function() {
+                    return alert('doSomething');
+                },
+                say: function (message) {
+                    alert(message)
+                },
+                warn: function (message, event) { // event : DOM 이벤트에 액세스할 수 있음
+                    console.log(event);
+                    if (event) event.preventDefault();
+                    alert(message);
+                }
+            },
+            computed: { // 데이터가 변경되면 자동으로 갱신됨(반응성)
+                reversedMessage: function () {
+                    return this.message.split('').reverse().join('');
+                }
+            },
+            watch: { // 데이터 변경을 감지
+                message: function (msg) {
+                    console.log(msg);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
